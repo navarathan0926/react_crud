@@ -6,8 +6,9 @@ const mysql = require("mysql");
 
 const app = express();
 
+app.use(express.json());
 app.use(cors());
-app.use(express.json);
+
 
 
 // module.exports = function(app) {
@@ -31,9 +32,10 @@ app.get("/", (req, res) =>{
 });
 
 app.post("/create", (req, res)=>{
-    const sql ="INSERT INTO student ('Name', 'Email') VALUES (?)";
+    const sql ="INSERT INTO student (`Firstname`,`Lastname`, `Email`) VALUES (?)";
     const values = [
-        req.body.name,
+        req.body.firstname,
+        req.body.lastname,
         req.body.email,
     ]
     db.query(sql, [values], (err, data)=>{
@@ -42,6 +44,21 @@ app.post("/create", (req, res)=>{
     })
 })
 
-app.listen(3030, () => {
-    console.log("listening");
+app.put("/update/:id", (req, res)=>{
+    const sql ="UPDATE student set Firstname = ? Email = ? WHERE ID = ?";
+    const values = [
+        req.body.firstname,
+        req.body.lastname,
+        req.body.email,
+    ]
+    const id = req.params.id;
+
+    db.query(sql, [...values, id], (err, data)=>{
+        if(err) return res.json("Error");
+        return res.json(data);
+    })
+})
+
+app.listen(5000, () => {
+    console.log("listening at port 5000");
 })
